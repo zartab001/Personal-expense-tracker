@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ✅ New Header Layout -->
+    <div class="dashboard-header">
+
+      <h1 class="center-heading">Personal Expense Tracker</h1>
+
+      <div class="header-right">
+        <a href="{% url 'export_pdf' %}" class="btn-export">📄</a>
+        <a href="{% url 'export_excel' %}" class="btn-export">📊</a>
+
+      </div>
+
+    </div>
+
+  
+
+      <div class="month-selector">
+        {% for m in months %}
+          <a href="?month={{ m }}" class="{% if selected_month|default:today.month|stringformat:"i" == m|stringformat:"i" %}active-month{% endif %}">
+            {{ m|date:"F" }}
+          </a>
+        {% endfor %}
+      </div>
+
+
+
+    <div class="dashboard-grid">
+      <!-- Balance Summary -->
+      <div class="card balance-card">
+
+        <h3>Monthly Budget</h3>
+        <p class="budget">PKR {{ budget_amount }}</p>
+
+        <h3>Total Spent</h3>
+        <p class="spent">PKR {{ total_spent }}</p>
+        
+        <h3>Remaining</h3>
+        <p class="balance">PKR {{ remaining_balance }}</p>
+      </div>
+
+      <!-- Charts -->
+      <div class="card chart-card">
+        <h3>Spending by Category</h3>
+        <div class="chart-container">
+          {{ chart_div|safe }}
+        </div>
+      </div>
+
+      <div class="card line-chart-card">
+        <h3>Daily Expense Trend</h3>
+        <div class="chart-container">
+          {{ line_chart_div|safe }}
+        </div>
+      </div>
+
+      <!-- 🔻 Hidden Recent Expenses Section -->
+      <div id="expense-list" class="card expense-list-card full-width hidden">
+        <h3>Recent Expenses</h3>
+
+        <form method="get" class="filter-form">
+          <input type="text" name="q" placeholder="Search by title..." value="{{ request.GET.q }}">
+          <select name="category">
+            <option value="All">All Categories</option>
+            {% for cat in categories %}
+              <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+          <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+          <button type="submit">🔍 Filter</button>
+        </form>
+
+        <ul class="expense-list">
+          {% for exp in expenses %}
+            <li class="expense-item">
+              <div><strong>{{ exp.date }}</strong> – {{ exp.title }} – ₹{{ exp.amount }} – {{ exp.category }}</div>
+              <div class="expense-actions">
+                <a href="{% url 'edit_expense' exp.id %}" class="btn-edit">✏️</a>
+                <a href="{% url 'delete_expense' exp.id %}" class="btn-delete" onclick="return confirm('Delete this expense?');">🗑️</a>
+              </div>
+            </li>
+          {% empty %}
+            <li>No expenses found.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- ✅ Toggle Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.getElementById('toggle-expenses');
+        const expenseList = document.getElementById('expense-list');
+
+        if (toggleBtn && expenseList) {
+          toggleBtn.addEventListener('click', function () {
+            expenseList.classList.toggle('hidden');
+            toggleBtn.textContent = expenseList.classList.contains('hidden')
+              ? 'Show Recent Expenses'
+              : 'Hide Recent Expenses';
+          });
+        }
+      });
+    </script>
+
+  <a href="{% url 'ai_summary' %}" class="ai-button floating-btn">
+    <i class="fas fa-robot"></i> Summary
+  </a>
+
+<form method="get" action="{% url 'budget_prediction' %}">
+  <button type="submit" class="predict-btn">🎯 Predict Next Month's Budget</button>
+</form>
+
+
+
+
+{% endblock %}

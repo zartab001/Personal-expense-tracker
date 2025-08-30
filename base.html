@@ -1,0 +1,43 @@
+<!-- tracker/templates/tracker/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense Tracker</title>
+    <link rel="stylesheet" href="{% static 'tracker/styles.css' %}">
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+    <script>
+    function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("hidden");
+    }
+    </script>
+
+</head>
+<body>
+
+  <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+  <div id="sidebar" class="sidebar-menu hidden">
+    <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'add_expense' %}">➕ Add Expense</a>
+    <a href="{% url 'add_category' %}">📁 Add Category</a>
+    <a href="{% url 'set_budget' %}">💰 Set Budget</a>
+    <a href="{% url 'recent_expenses' %}">📄 Recent Expenses</a>
+  </div>
+
+  <div class="layout">
+    <!-- 📅 Sidebar -->
+    <aside class="sidebar">
+      <div class="logo"></div>
+    </aside>
+
+    <!-- 🧾 Main Content -->
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

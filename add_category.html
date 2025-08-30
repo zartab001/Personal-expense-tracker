@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div class="form-container">
+      <form method="post">
+      {% csrf_token %}
+      <label for="id_name">Name:</label>
+      {{ form.name }}
+
+      <label for="id_parent">Parent Category:</label>
+      {{ form.parent }}
+
+      <button type="submit" class="btn-submit">Submit</button>
+    </form>
+
+    <ul>
+    {% for cat in categories %}
+      {% if not cat.parent %}
+        <li>
+          <strong>{{ cat.name }}</strong>
+          <ul>
+            {% for sub in cat.subcategories.all %}
+              <li>{{ sub.name }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+
+  </div>
+
+{% endblock %}

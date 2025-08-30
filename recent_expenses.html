@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="recent-expenses-wrapper">
+  <div class="expense-list-card">
+    <h3 class="text-yellow-400" style="text-align:center; font-size: 1.5rem;">Recent Expenses</h3>
+
+    <!-- Filter & Search -->
+    <form method="GET" class="filter-form">
+      <input type="text" name="q" placeholder="Search by title..." value="{{ request.GET.q }}">
+      <select name="category">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+            {{ cat.name }}
+          </option>
+        {% endfor %}
+      </select>
+      <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+      <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+      <button type="submit">🔍 Filter</button>
+    </form>
+
+    <!-- Expense List -->
+    {% if expenses %}
+      <ul class="expense-list">
+        {% for expense in expenses %}
+          <li class="expense-item">
+            <div>
+              <strong>{{ expense.date|date:"F j, Y" }}</strong> – {{ expense.title }} –
+              ₹{{ expense.amount }} – {{ expense.category }}
+            </div>
+            <div class="expense-actions">
+              <a href="{% url 'edit_expense' expense.id %}" class="btn-edit">✏️</a>
+              <a href="{% url 'delete_expense' expense.id %}" class="btn-delete">🗑️</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p style="text-align: center; color: #aaa;">No expenses found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

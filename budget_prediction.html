@@ -1,0 +1,11 @@
+<!-- budget_prediction.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <h2>📈 Predicted Budget for Next Month</h2>
+  <p><strong>{{ prediction }}</strong> PKR</p>
+  <a href="{% url 'dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+</div>
+{% endblock %}
